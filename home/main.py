@@ -1,7 +1,7 @@
 import os
 import sys
 
-def main():
+def run_django_admin_tasks():
     """ Run administrative tasks"""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE','restaurent_management.settings')
     try:
@@ -16,4 +16,4 @@ def main():
 
 
 if __name__ =='__main__':
-    main()        
+    run_django_admin_tasks()        
