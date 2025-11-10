@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import *
+from .views import CouponValidationView
 
 urlpatterns = [
     
-    path('api/', include('home.urls')),
-    
-    path('api/orders/', include('orders.urls')),
+    path('coupons/validate/',CouponValidationView.as_view(), nam='coupon-validate'),
+
 
 ]
