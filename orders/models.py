@@ -5,7 +5,7 @@ from django.utils import timezone
 from .utils import generate_coupon_code
 
 # menu category  model
-class MenuCategory(models.model):
+class MenuCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
 
@@ -14,7 +14,7 @@ class MenuCategory(models.model):
 
 # order status
 class OrderStatus(models.Model):
-    name = mpdels.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)
 
 
 def __str__(self):
@@ -30,7 +30,7 @@ class Coupon(models.Model):
 
     def save(self, *args, **kwargs):
         # if no code entered ,generate one automatically 
-        if not self.code;
+        if not self.code:
            self.code = generate_coupon_code()
         super().save(*args, **kwargs)   
 
