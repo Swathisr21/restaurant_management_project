@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from django.utils import timezone
+from .utils import generate_coupon_code
 
 # menu category  model
 class MenuCategory(models.model):
@@ -27,6 +28,11 @@ class Coupon(models.Model):
     valid_from = models.DateField()
     valid_until = models.DateField()
 
+    def save(self, *args, **kwargs):
+        # if no code entered ,generate one automatically 
+        if not self.code;
+           self.code = generate_coupon_code()
+        super().save(*args, **kwargs)   
 
     def __str__(self):
         return f"{self.code} ({self.discount_percentage}% off)"
