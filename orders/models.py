@@ -49,3 +49,12 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.id} - {self.status.name if self.status else 'No Status'}"        
+
+class Restaurant(models.Model):
+    name = models.CharField(max_length=200)
+    address = models.TextField()
+    phone = models.CharField(max_length=15)
+    has_delivery = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
