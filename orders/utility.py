@@ -19,7 +19,11 @@ def get_daily_sales_total(date):
     :param date: A python date object.
     :return : Decimal total of sales for that day , or 0 if none.
     """
-
+     # orders QuerySet
     orders = Order.objects.filter(created_at_date=date)
-    result = order.aggregate(total_sum=Sum('total_price'))['tital_sum']
-    return result if result is not None else 0            
+    result = orders.aggregate(total_sum=Sum('total_price'))
+    total = result.get('total_sum')
+
+    if total is None:
+        return 0
+    return total
