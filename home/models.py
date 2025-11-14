@@ -12,7 +12,7 @@ class MenuItem(models.Model):
     is_featured = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - ₹{self.price}"
 
 class DailySpecial(models.Model):
     name = models.CharField(max_length=100)
@@ -27,7 +27,7 @@ class DailySpecial(models.Model):
         if not specials.exists():
             return None
 
-        return specials.order_by('?').first()
+        return specials.order_by("?").first()
 
     def __str__(self):
         return self.name                
