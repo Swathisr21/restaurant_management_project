@@ -3,6 +3,7 @@ import secrets
 from .models import Coupon
 from django.db.models import sum
 from .models import Order
+from decimal import Decimal
 
 def generate_coupon_code(length=10):
     """ Generates a unique rando alphanumeric coupon code."""
@@ -27,3 +28,18 @@ def get_daily_sales_total(date):
     if total is None:
         return 0
     return total
+
+def calculate_tip_amount(order_total, tip_percentage):
+    """
+    calculate the tip amount for a given ordder total and tip percentage.
+    
+    """
+    
+    # convert values to decimal for accurate money calculation
+    order_total = Decimal(order_total)
+    tip_percentage = Decimal(tip_percentage)
+
+    tip_amount = order_total * (tip_percentage / Decimal(100))
+
+    # round to 2 decimal places
+    return round(tip_amount, 2)
