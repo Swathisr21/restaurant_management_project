@@ -6,10 +6,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework import viewsets
 from rest_framework.response import Response 
 from rest_framework.pagination import PageNumberPagination 
-from .models import MenuCategory
-from .serializers import MenuCategorySerializer
-from .models import MenuItem
-from .serializers import MenuItemSerializer
+from .models import MenuCategory, MenuItem
+from .serializers import MenuCategorySerializer, MenuItemSerializer
 
 class MenuCategoryListView(ListAPIView):
     queryset = MenuCategory.objects.all()
@@ -42,3 +40,19 @@ class MenuItemSearchViewset(viewsets.Viewsets):
 
         serializer = MenuItemSerializer(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+class MenuItemIngredientsView(RetrieveAPIView):
+    """
+    Return all ingredients for the given MenuItem ID.
+    """
+
+    def get(self, request, pk):
+        try:
+            menu_item = MenuItem.objects.get(pk=pk)
+        except MenuItem.DoesNotExist:
+            return Response({"error": "Menu item not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+        ingredients = menu_item.ingredients.all()
+        serializer = IngredientSerializer(ingredients, many=True)
+        return Response(serializer.data)               
