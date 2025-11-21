@@ -15,3 +15,10 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ['id', 'name']
+    
+    # Custom validation
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.validationError("Price must be a positive number")
+        return value    
+
