@@ -1,4 +1,5 @@
 from django.db import models
+import datetime 
 
 # Create your models here.
 class MenuCategory(models.Model):
@@ -13,7 +14,11 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return f"{self.name} - ₹{self.price}"
-
+class DailySpecialManager(models.Manager):
+    def upcoming(self):
+        today = datetime.date.today()
+        return super().get_quertset().filter(date__gte=today, available=True)
+        
 class DailySpecial(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
