@@ -1,6 +1,12 @@
 from django.urls import path
-from .views import (MenuCategoryListview, FeaturedMenuItemsView, MenuItemSearchViewset, MenuItemIngredientsView)
+from .views import (
+    MenuCategoryListview, 
+    FeaturedMenuItemsView, 
+    MenuItemSearchViewset, 
+    MenuItemIngredientsView
+    )
 
+# for viewSet List endpoint
 menu_item_search = MenuItemSearchViewset.as_view({'get': 'list'})
 
 urlpatterns = [
