@@ -3,8 +3,9 @@ from django.shortcuts import render
 # Create your views here.
 
 from rest_framework.generics import ListAPIView
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response 
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination 
 from .models import MenuCategory, MenuItem
 from .serializers import MenuCategorySerializer, MenuItemSerializer
@@ -25,7 +26,7 @@ class MenuItemPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class MenuItemSearchViewset(viewsets.Viewsets):
+class MenuItemSearchViewSet(viewsets.ViewSet):
     pagination_class = MenuItemPagination
 
     def list(self, request):
@@ -55,4 +56,24 @@ class MenuItemIngredientsView(RetrieveAPIView):
 
         ingredients = menu_item.ingredients.all()
         serializer = IngredientSerializer(ingredients, many=True)
-        return Response(serializer.data)               
+        return Response(serializer.data)
+
+class MenuItemSearchViewSet(viewsets.ViewSet):
+
+    # PUT  /Menu-items/<id>
+    def update(self, request, pk=None):
+        try:
+            menu_item = MenuItem.objects.get(pk=pk)
+        except MenuItem.DoesNotExist:
+            return Response(
+                {"error": "Menu item not found"},status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = MenuItemSerializer(menu_item, data=request.data)
+
+        if serializer.is_valid();
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_404_BAD_REQUEST)
+              
