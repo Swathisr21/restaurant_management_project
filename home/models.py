@@ -1,7 +1,15 @@
 from django.db import models
-import datetime 
+import datetime, MenuItem
+from django.db.models import Count
 
-# Create your models here.
+class MenuItemManager(models.Manager):
+    def get_top_selling_items(self, num_items=5):
+        return (
+            self.get_queryset()
+            .annotate(order_count=Count("orderitem"))
+            .order_by("-order_count")[:num_items]
+        )
+
 class MenuCategory(models.Model):
     name = models.CharField(max_length=100)
 
@@ -68,6 +76,10 @@ class MenuItem(models.Model)
         null=True,
         blank=True
     )
+    objects = MenuItemManager()
+
+    def __str__(self):
+        return self.name
 
     # New field
     ingredients = models.ManyToManyField(Ingredient, related_name='menu_items', blank=True)
