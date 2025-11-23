@@ -4,7 +4,8 @@ from .views import (
     FeaturedMenuItemsView, 
     MenuItemSearchViewset, 
     MenuItemIngredientsView,
-    MenuItemViewSet
+    MenuItemViewSet,
+    TableDetailView
     )
 
 # for viewSet List endpoint
@@ -19,4 +20,6 @@ urlpatterns = [
     path("menu/items/search/", menu_item_search, name="menu_item_search"), 
     path("menu/items/<int:pk>/ingredients/", MenuItemIngredientsView.as_view(), name="menu_item_ingredients"),
     path("menu-items/<int:pk>/update", menu_item_update, name="menu_item_update"),
+    path("tables/<int:pk>/", TableDetailView.as_view(), name="table_detail"),
 ]
+
