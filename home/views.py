@@ -77,3 +77,13 @@ class MenuItemSearchViewSet(viewsets.ViewSet):
 
         return Response(serializer.errors, status=status.HTTP_404_BAD_REQUEST)
               
+class MenuItemByCategoryView(ListAPIView):
+    serializer_class = MenuItemSerializer
+
+    def get_queryset(self):
+        category_name = self.request.query_params.get('category', None)
+
+        if category_name:
+            return MenuItem.objects.filter(category__name__iexact=category_name)
+
+        return MenuItem.objects.all()    
