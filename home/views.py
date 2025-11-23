@@ -7,8 +7,8 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response 
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination 
-from .models import MenuCategory, MenuItem
-from .serializers import MenuCategorySerializer, MenuItemSerializer
+from .models import MenuCategory, MenuItem, Table
+from .serializers import MenuCategorySerializer, MenuItemSerializer, TableSerializer
 
 class MenuCategoryListView(ListAPIView):
     queryset = MenuCategory.objects.all()
@@ -94,4 +94,8 @@ class Table(models.Model):
     is_available = models.BooleanField(default=True) 
 
     def __str__(self):
-        return f"Table {self.table_number}"           
+        return f"Table {self.table_number}"
+
+class TableDetailView(RetrieveAPIView):
+    queryset = Table.objects.all()
+    serializer_class = TableSerializer
