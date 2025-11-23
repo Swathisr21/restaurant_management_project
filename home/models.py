@@ -61,6 +61,14 @@ class MenuItem(models.Model)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     is_featured = models.BooleanField(default=False)
 
+    category = models.ForeignKey(
+        'MenuCategory',
+        on_delete=models.CASCADE,
+        related_name='menu_item',
+        null=True,
+        blank=True
+    )
+
     # New field
     ingredients = models.ManyToManyField(Ingredient, related_name='menu_items', blank=True)
 
