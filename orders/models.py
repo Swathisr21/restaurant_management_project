@@ -58,3 +58,8 @@ class Restaurant(models.Model):
 
     def __str__(self):
         return self.name
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE) 
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE) 
+    quantity = models.PositiveIntegerField(default=1)      
