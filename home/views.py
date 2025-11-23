@@ -9,6 +9,11 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination 
 from .models import MenuCategory, MenuItem, Table
 from .serializers import MenuCategorySerializer, MenuItemSerializer, TableSerializer
+from .utils.validation_utils import is_valid_email
+
+if not is_valid_email(user_email):
+    return Response({"error": "Invalid email"}, status=400)
+    
 
 class MenuCategoryListView(ListAPIView):
     queryset = MenuCategory.objects.all()
