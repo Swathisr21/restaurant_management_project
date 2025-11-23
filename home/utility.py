@@ -1,5 +1,7 @@
 from datetime import datetime, time
 from .models import DailyOperatingHours
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
 
 def get_today_operating_hours():
     """
@@ -14,7 +16,7 @@ def get_today_operating_hours():
         return (hours.open_time, hours.close_time)
     except DailyOperatingHours.DoesNotExist:
        # if no record found, restaurant might be closed
-        return (None, None)   
+    return (None, None)   
 
 def is_restaurant_open():
     # Get current day and time
@@ -34,4 +36,13 @@ def is_restaurant_open():
     if current_day < 5:   # Monday-Friday
         return weekday_open <= current_time <= weekday_close
         else:   # Saturday-Sunday
-            return weekend_open <= current_time <= weekend_close
+    return weekend_open <= current_time <= weekend_close
+
+def is_valid_email(email: str) -> bool:
+    validator = EmailValidator()
+
+    try:
+        validator(email)
+        return True
+    except ValidationError:
+        return False        
