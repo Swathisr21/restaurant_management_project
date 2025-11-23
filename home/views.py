@@ -86,4 +86,12 @@ class MenuItemByCategoryView(ListAPIView):
         if category_name:
             return MenuItem.objects.filter(category__name__iexact=category_name)
 
-        return MenuItem.objects.all()    
+        return MenuItem.objects.all()
+
+class Table(models.Model):
+    table_number = models.IntegerField()
+    capacity = models.IntegerField()
+    is_available = models.BooleanField(default=True) 
+
+    def __str__(self):
+        return f"Table {self.table_number}"           
