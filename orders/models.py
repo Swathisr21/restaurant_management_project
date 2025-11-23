@@ -4,8 +4,6 @@ from django.contrib.auth.models import user
 # Create your models here.
 from django.utils import timezone
 from .utils import generate_coupon_code
-from django.contrib import admin
-from .models import Order
 
 # menu category  model
 class MenuCategory(models.Model):
