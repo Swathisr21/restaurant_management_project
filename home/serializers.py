@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MenuCategory, MenuItem
+from .models import MenuCategory, MenuItem, Table
 
 class MenuCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,5 +20,10 @@ class IngredientSerializer(serializers.ModelSerializer):
     def validate_price(self, value):
         if value <= 0:
             raise serializers.validationError("Price must be a positive number")
-        return value    
+        return value  
+
+class TableSerializer(serializers.ModelSerializers):
+     class Meta:
+        model = Table
+        fields = '__all__'
 
