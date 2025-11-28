@@ -5,6 +5,12 @@ from django.contrib.auth.models import user
 from django.utils import timezone
 from .utils import generate_coupon_code
 
+# Custom Manager
+class ActiveOrderManager(models.Manager):
+    def get_active_orders(self):
+        return self.filter(status__in=['pending', 'processing'])
+
+
 # menu category  model
 class MenuCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -46,6 +52,8 @@ class Order(models.Model):
 
     status = models.ForeignKey(OrderStatus, on_delete=models.SET_NULL, null=True)
 
+# assign custom manager
+    objects = ActiveOrderManager()
 
     def __str__(self):
         return f"Order #{self.id} - {self.status.name if self.status else 'No Status'}"        
