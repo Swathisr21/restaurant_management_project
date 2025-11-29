@@ -51,7 +51,12 @@ class Order(models.Model):
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     )
-    
+    def get_unique_item_names(self):
+        items = self.orderitem_set.all()
+        unique_names ={item.menu_item.name for item in items}
+        return list(unique_names)
+
+        
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     customer_name = models.CharField(max_length=100)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
