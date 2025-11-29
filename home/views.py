@@ -104,3 +104,9 @@ class Table(models.Model):
 class TableDetailView(RetrieveAPIView):
     queryset = Table.objects.all()
     serializer_class = TableSerializer
+
+class AvailableTablesAPIView(ListAPIView):
+    serializer_class = TableSerializer
+
+    def get_queryset(self):
+        return Table.objects.filter(is_available=True)    
