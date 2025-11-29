@@ -5,7 +5,8 @@ from .views import (
     MenuItemSearchViewset, 
     MenuItemIngredientsView,
     MenuItemViewSet,
-    TableDetailView
+    TableDetailView,
+    AvailableTablesAPIView
     )
 
 # for viewSet List endpoint
@@ -21,5 +22,6 @@ urlpatterns = [
     path("menu/items/<int:pk>/ingredients/", MenuItemIngredientsView.as_view(), name="menu_item_ingredients"),
     path("menu-items/<int:pk>/update", menu_item_update, name="menu_item_update"),
     path("tables/<int:pk>/", TableDetailView.as_view(), name="table_detail"),
+    path('api/tables/available/', AvailableTablesAPIView.as_view(), name='available_tables_api'),
 ]
 
