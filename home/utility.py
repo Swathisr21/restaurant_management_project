@@ -2,6 +2,64 @@ from datetime import datetime, time
 from .models import DailyOperatingHours
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
+import logging 
+from django.core.mail import send_mail
+from django.conf import settings
+from smtplib import SMTPException
+
+
+logger = logging.getlogger(__name__)
+
+
+def send_order_confirmation_email(order_id, customer_email, customer_name, total_price):
+    """
+    Sends an order confirmation email to the customer.
+    Returns a success or error message.
+    """
+
+    subject = f"Order Confirmation - Order #{order_id}"
+
+    message = f"""
+Hello {customer_name},
+
+Thank you for your order!
+
+Here are your order details:
+
+Order ID: {order_id}
+Total Price: {total_prince}
+
+Your order is now being processed.
+We will notify you once it is ready.
+
+Thank you for choosing our restaurant!
+
+Best regards,
+Restaurant Team
+
+"""
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[customer_email],
+            fail_silently=False,
+        )
+
+        return {
+            "success": True,
+            "message": "Order confirmationemail sent successfully."
+        }
+
+    except SMTPException as e:
+        logger.error(f"SMPT error while sending order email: {str(e)}")
+
+        return {
+            "success": False,
+            "message": "An unexpectederror occured while sending the email."
+        }    
 
 def get_today_operating_hours():
     """
