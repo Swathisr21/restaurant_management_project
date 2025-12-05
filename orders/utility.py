@@ -4,6 +4,67 @@ from .models import Coupon
 from django.db.models import sum
 from .models import Order
 from decimal import Decimal
+import logging
+from django.core.mail import send_mail
+from django.conf import settings
+from smtplib import SMTPException
+
+logger = logging.getlogger(__name__)
+
+def send_order_conformation_email(order_id, customer_email, customer_name, total_price):
+    """
+    Sends an order confirmation email to the customer.
+    Returns a success or error message.
+    """
+
+    subject = f"Order Confirmation - Order #{order_id}"
+
+    message = f"""
+
+    Thank you for your order!
+
+    Here are your order details:
+
+    Order ID: {order_id}
+    Total price: {total_price}
+
+    Thank you for choosing our restaurant!
+
+    Best resards,
+    Restaurant Team
+    """
+       
+       try:
+           send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[customer_email],
+            fail_silently=False,
+           )
+
+           return {
+               "success": True,
+               "message": "Order confirmation email sent succeesfully."
+           }
+
+
+        except SMTPException as e:
+            logger.error(f"SMTP error while sending order email: {str(e)}")
+
+            return {
+                "success": False,
+                "message": "Failed to send email due to email server error."
+            }
+
+        except Exception as e:
+            logger.error(f"Unexpected error while sending order email: {str(e)}")
+
+            return {
+                "success": False,
+                "message": "An unexpected error occurred while sending the email."       
+            }
+                            
 
 def generate_coupon_code(length=10):
     """ Generates a unique rando alphanumeric coupon code."""
