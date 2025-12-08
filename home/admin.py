@@ -17,3 +17,8 @@ list_filter = ('is_active',)
 
 # 6. Register Restaurant model with the admin
 admin.site.register(Restaurant, RestaurantAdmin)
+
+class RestaurantAdmin(admin.ModelAdmin):
+    list_display = ('name', 'address', 'phone', 'has_delivery', 'operating_days')
+
+    
