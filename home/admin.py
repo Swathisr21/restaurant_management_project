@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Restaurant
+from .models import LoyaltyProgram
 
 
 # Register your models here.
@@ -21,4 +22,4 @@ admin.site.register(Restaurant, RestaurantAdmin)
 class RestaurantAdmin(admin.ModelAdmin):
     list_display = ('name', 'address', 'phone', 'has_delivery', 'operating_days')
 
-    
+admin.site.register(LoyaltyProgram)  
