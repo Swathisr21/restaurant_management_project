@@ -1,7 +1,8 @@
 from django.db import models
-import datetime, MenuItem
 from django.db.models import Count
+import datetime
 
+# Menu Item Manager
 class MenuItemManager(models.Manager):
     def get_top_selling_items(self, num_items=5):
         return (
@@ -10,16 +11,21 @@ class MenuItemManager(models.Manager):
             .order_by("-order_count")[:num_items]
         )
 
+
+# Menu Category
 class MenuCategory(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.name} - ₹{self.price}"
+        return self.name
+
+# Daily Special Manager        
 class DailySpecialManager(models.Manager):
     def upcoming(self):
         today = datetime.date.today()
         return super().get_queryset().filter(date__gte=today, available=True)
         
+# Daily Special
 class DailySpecial(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -33,18 +39,17 @@ class DailySpecial(models.Model):
     @staticmethod
     def get_random_special():
         specials = DailySpecial.objects.filter(available=True)
-        if not specials.exists():
-            return None
-
-        return specials.order_by("?").first()
+        return specials.order_by("?").first() if specials.exists() else None
 
     def __str__(self):
-        return self.name    
+        return self.name
+
+# NutritionalInformation     
 class NutritionalInformation(models.Model):
     menu_item = models.ForeignKey(
-        'MenuItem',
+        MenuItem,
         on_delete=models.CASCADE,
-        related_name='nutrition'
+        related_name="nutrition"
     )
 
     calories = models.IntegerField()
@@ -53,8 +58,9 @@ class NutritionalInformation(models.Model):
     carbohydrate_grams = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
-        return f"Nutritional Info for {self.menu_item.name} - {self.calories} calories"                     
+        return f"Nutritional Info for {self.menu_item.name}      
 
+# Ingredients
 class Ingredient(models.Model): 
     name = models.CharField(max_length=100) 
 
@@ -78,15 +84,13 @@ class MenuItem(models.Model)
     )
     objects = MenuItemManager()
 
-    def __str__(self):
-        return self.name
-
     # New field
     ingredients = models.ManyToManyField(Ingredient, related_name='menu_items', blank=True)
 
     def __str__(self):
         return f"{self.name} - ₹{self.price}"          
 
+# Restaurant
 class Restaurant(models.Model):
     name = models.CharField(max_length=200)
     address = models.TextField()
@@ -102,6 +106,7 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+# LoyaltyProgram
 class LoyaltyProgram(models.Model):
     name = models.CharField(
         max_length=50,
