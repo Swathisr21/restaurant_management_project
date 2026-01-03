@@ -1,14 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import user
+from django.contrib.auth.models import User
 
 # Create your models here.
 from django.utils import timezone
-from .utils import generate_coupon_code
+from .utility import generate_coupon_code, generate_unique_order_id
 
 # Custom Manager
 class ActiveOrderManager(models.Manager):
     def get_active_orders(self):
-        return self.filter(status__in=['pending', 'processing'])
+        return self.filter(status__name__in=['pending', 'processing'])
 
 
 # menu category  model
@@ -29,7 +29,7 @@ def __str__(self):
 
 # coupon
 class Coupon(models.Model):
-    code = models.CharField(max_length=50, unique=True)
+    code = models.CharField(max_length=50, unique=True, blank=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
     is_active = models.BooleanField(default=True)
     valid_from = models.DateField()
@@ -46,15 +46,11 @@ class Coupon(models.Model):
 
 # order 
 class Order(models.Model):
-    STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
+    order_id = models.CharField(
+        max_length=12,
+        unique=True,
+        editable=False
     )
-    def get_unique_item_names(self):
-        items = self.orderitem_set.all()
-        unique_names ={item.menu_item.name for item in items}
-        return list(unique_names)
 
         
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
@@ -66,10 +62,20 @@ class Order(models.Model):
 
 # assign custom manager
     objects = ActiveOrderManager()
+    
+    def save(self, *args, **kwargs):
+        if not self.order_id:
+            self.order_id = generate_unique_order_id()
+        super().save(*args, **kwargs)
+
+    def generate_unique_item_names(self):
+        items = self.orderitem_set.select_related("menu_item")
+        return list({item.menu_item.name for item in items})        
 
     def __str__(self):
-        return f"Order #{self.id} - {self.status.name if self.status else 'No Status'}"        
+        return f"Order {self.order_id}"        
 
+# Restaurant 
 class Restaurant(models.Model):
     name = models.CharField(max_length=200)
     address = models.TextField()
@@ -79,6 +85,8 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+# Menu Items         
+class
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE) 
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE) 
