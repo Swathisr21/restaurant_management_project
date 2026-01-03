@@ -11,6 +11,18 @@ from smtplib import SMTPException
 
 logger = logging.getlogger(__name__)
 
+def generate_unique_order_id(length=8):
+    """
+    Generate a unique, short alphanumeric order ID.
+    Example: X9K2A7PZ
+    """
+    characters = string.ascii_uppercase + string.digits
+
+    while True:
+        order_id = ''.join(secrets.choice(characters) for _ in range(length))
+        if not Order.objects.filter(order_id=order_id).exsits():
+            return order_id
+            
 def send_order_conformation_email(order_id, customer_email, customer_name, total_price):
     """
     Sends an order confirmation email to the customer.
