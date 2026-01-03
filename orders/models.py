@@ -86,7 +86,15 @@ class Restaurant(models.Model):
         return self.name
 
 # Menu Items         
-class
+class MenuItem(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey, on_delete=models.CASCADE
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+
+    def __str__(self):
+        return self.name
+
+# Order Item
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE) 
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE) 
