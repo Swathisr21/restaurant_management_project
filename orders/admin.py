@@ -1,10 +1,11 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import OrderStatus, Order
+from .models import OrderStatus, Order, PaymentMethod
 
 
 admin.site.register(OrderStatus)
+admin.site.register(PaymentMethod)
 
 # customer admin action:
     def mark_orders_processed(modeladmin, request, queryset):
