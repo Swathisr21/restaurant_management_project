@@ -7,10 +7,33 @@ from decimal import Decimal
 import logging
 from django.core.mail import send_mail
 from django.conf import settings
-from 
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from smtplib import SMTPException
 
-logger = logging.getlogger(__name__)
+logger = logging.getLogger(__name__)
+
+# Email sender
+def send_email(recipient_email, subject, message):
+    try:
+        validate_email(recipient_email)
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient_email],
+            fail_silently=False,
+        )
+        return True
+
+except ValidationError:
+    logger.error(f"Invalid email: {recipient_email}")
+    return False
+
+except Exception as e:
+    logger.error(f"Email error :{str(e)}")
+    return False
 
 def generate_unique_order_id(length=8):
     """
