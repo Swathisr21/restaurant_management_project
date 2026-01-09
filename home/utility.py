@@ -5,8 +5,6 @@ from django.core.exceptions import ValidationError
 import logging 
 from django.core.mail import send_mail
 from django.conf import settings
-from django.core.exceptions import EmailValidator
-from django.core.exceptions import ValidationError
 from smtplib import SMTPException
 
 
