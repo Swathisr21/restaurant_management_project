@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from smtplib import SMTPException
 
 
-logger = logging.getlogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def send_order_confirmation_email(order_id, customer_email, customer_name, total_price):
