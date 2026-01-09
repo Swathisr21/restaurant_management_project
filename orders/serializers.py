@@ -34,12 +34,11 @@ class OrderSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model Order
+        model = Order
         fields = [
             'id',
-            'order_id',
             'customer_name',
-            'Created_at',
+            'created_at',
             'status',
             'items',
         ]        
