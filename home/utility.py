@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 import logging 
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.exceptions import EmailValidator
+from django.core.exceptions import ValidationError
 from smtplib import SMTPException
 
 
@@ -66,15 +68,16 @@ def get_today_operating_hours():
     Return today's operating hours as a tuple (open_time, close_time).
     if no record is found for today, returns (None, None).
     """
-    #get the current day name 
+    # get the current day name 
     today_name = datetime.now().strftime('%A')
+    
     try:
         # look up today's operating hours in the database
         hours = DailyOperatingHours.objects.get(day_of_week=today_name)
         return (hours.open_time, hours.close_time)
     except DailyOperatingHours.DoesNotExist:
        # if no record found, restaurant might be closed
-    return (None, None)   
+    return None, None  
 
 def is_restaurant_open():
     # Get current day and time
@@ -93,10 +96,13 @@ def is_restaurant_open():
     # Check if restaurant is open
     if current_day < 5:   # Monday-Friday
         return weekday_open <= current_time <= weekday_close
-        else:   # Saturday-Sunday
-    return weekend_open <= current_time <= weekend_close
+    else:   # Saturday-Sunday
+        return weekend_open <= current_time <= weekend_close
 
 def is_valid_email(email: str) -> bool:
+    """
+    Validates an email address.
+    """ 
     validator = EmailValidator()
 
     try:
