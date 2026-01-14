@@ -45,6 +45,7 @@ class Coupon(models.Model):
         return f"{self.code} ({self.discount_percentage}% off)"
 
 # order 
+from decimal import Decimal
 class Order(models.Model):
     order_id = models.CharField(
         max_length=12,
@@ -73,7 +74,15 @@ class Order(models.Model):
         return list({item.menu_item.name for item in items})        
 
     def __str__(self):
-        return f"Order {self.order_id}"        
+        return f"Order {self.order_id}"
+# Calculate
+    def calculate_total(self):
+        total = Decimal("0.00")
+
+        for item in  self.orderitem_set.all():
+            total+=item.price * item.quantity
+
+        return total           
 
 # Restaurant 
 class Restaurant(models.Model):
@@ -99,6 +108,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE) 
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE) 
     quantity = models.PositiveIntegerField(default=1)      
+    price = models.DecimalField(max_digits=8, decimal_places=2)
 
 # Payment Method
 class PaymentMethod(models.Model):
