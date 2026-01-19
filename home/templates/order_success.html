@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Order Successful!</h1>
+<p>Thank you {{ order.customer_name }}!</p>
+<p>Your Order Number: <b>#{{ order.id }}</b></p>
+<p>Total Amount: ₹{{ order.total_amount }}</p>
+
+<a href="/order/">Place Another Order</a>
+{% endblock %}

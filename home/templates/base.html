@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Management</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f2f2f2;
+            padding: 12px 20px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .left-links a,
+        .right-links a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .left-links span {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .left-links a:hover,
+        .right-links a:hover {
+            color: #007bff;
+        }
+
+        .container {
+            text-align: center;
+            padding-top: 40px;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="navbar">
+
+        <!-- LEFT SIDE -->
+        <div class="left-links">
+            {% if user.is_authenticated %}
+                <span>Welcome, {{ user.username }}!</span>
+                <a href="/accounts/logout/">Logout</a>
+            {% else %}
+                <a href="/accounts/login/">Login</a>
+                <a href="/accounts/register/">Register</a>
+            {% endif %}
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="right-links">
+               <a href="/">Home</a>
+               <a href="/menu/">Menu</a>
+               <a href="/order/">Place Order</a>
+               <a href="/my-orders/">My Orders</a>
+        </div>
+
+
+    </div>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

@@ -1,9 +1,8 @@
 import string
 import secrets
-from .models import Coupon
-from django.db.models import sum
-from .models import Order
 from decimal import Decimal
+from django.db.models import Sum
+
 
 def generate_coupon_code(length=10):
     """ Generates a unique rando alphanumeric coupon code."""
@@ -43,3 +42,7 @@ def calculate_tip_amount(order_total, tip_percentage):
 
     # round to 2 decimal places
     return round(tip_amount, 2)
+def generate_coupon_code():
+    from .models import Coupon   # lazy import → breaks circular import
+    # your logic...
+

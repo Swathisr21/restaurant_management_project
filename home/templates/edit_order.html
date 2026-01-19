@@ -1,0 +1,28 @@
+@login_required
+def edit_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    items = MenuItem.objects.all()
+
+    if request.method == "POST":
+        order.customer_name = request.POST.get("customer_name")
+        order.table_number = request.POST.get("table_number")
+
+        order.items.all().delete()
+
+        total = 0
+        for item in items:
+            qty = int(request.POST.get(f"qty_{item.id}", 0))
+            if qty > 0:
+                OrderItem.objects.create(
+                    order=order,
+                    menu_item=item,
+                    quantity=qty,
+                    price=item.item_price
+                )
+                total += item.item_price * qty
+
+        order.total_amount = total
+        order.save()
+        return redirect("my_orders")
+
+    return render(request, "edit_order.html", {"order": order, "items": items})

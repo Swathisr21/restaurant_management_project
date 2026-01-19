@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+  .order-card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    background: #fff;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .order-title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-badge {
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: 10px;
+  }
+  .pending { background:#ffeeba; color:#856404; }
+  .cancelled { background:#f8d7da; color:#721c24; }
+  .item-row { margin: 6px 0; font-size: 16px; }
+  .invoice-link {
+    text-align:center;
+    margin-top:10px;
+    display:block;
+    color:#0066ff;
+    text-decoration:none;
+    font-weight:bold;
+  }
+</style>
+
+
+<h2 style="text-align:center;margin-bottom:20px;">My Orders</h2>
+
+{% if orders %}
+    {% for order in orders %}
+        <div class="order-card">
+
+            <!-- Order Title + Status -->
+            <!-- Order Title + Status -->
+<div class="order-title">
+    Order #{{ order.id }}
+
+    {% if order.status == 'pending' %}
+        <span class="status-badge pending">Pending</span>
+
+    {% elif order.status == 'completed' %}
+        <span class="status-badge completed">Completed</span>
+
+    {% elif order.status == 'cancelled' %}
+        <span class="status-badge cancelled">Cancelled</span>
+    {% endif %}
+</div>
+
+
+            <p><b>Name:</b> {{ order.customer_name }}</p>
+            <p><b>Table Number:</b> {{ order.table_number }}</p>
+            <p><b>Date:</b> {{ order.created_at|date:"d M Y - h:i A" }}</p>
+
+            <h4>Items Ordered:</h4>
+            <ul class="items-list">
+            {% for item in order.items.all %}
+                <li class="item-row">
+                    {% if "pizza" in item.menu_item.item_name|lower %}
+                        🍕
+                    {% elif "coffee" in item.menu_item.item_name|lower %}
+                        ☕
+                    {% elif "burger" in item.menu_item.item_name|lower %}
+                        🍔
+                    {% else %}
+                        🍽
+                    {% endif %}
+
+                    {{ item.menu_item.item_name }} — 
+                    Qty: {{ item.quantity }} — 
+                    Price: ₹{{ item.price }}
+                </li>
+            {% endfor %}
+            </ul>
+
+            <p><b>Total Amount:</b> ₹{{ order.total_amount }}</p>
+
+            <!-- Cancel Button -->
+            {% if order.status == 'cancelled' %}
+                <p style="color:red;font-weight:bold;text-align:center;">
+                    This order has been cancelled.
+                </p>
+            {% else %}
+                <div style="text-align:center;margin-top:15px;">
+                    <a href="{% url 'cancel_order' order.id %}"
+                       style="padding:8px 15px; background:red; color:white;
+                              border-radius:6px; text-decoration:none;"
+                       onclick="return confirm('Cancel this order?');">
+                       Cancel Order
+                    </a>
+                </div>
+            {% endif %}
+             <a href="{% url 'invoice_page' order.id %}" class="btn btn-primary">
+                View Invoice
+             </a>
+
+            
+
+        </div>
+    {% endfor %}
+{% else %}
+    <p style="text-align:center;">No orders found.</p>
+{% endif %}
+
+{% endblock %}

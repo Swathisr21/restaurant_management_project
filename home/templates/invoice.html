@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+
+{% load multiply_tags %}
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bill — Order #{{ order.id }}</title>
+
+<style>
+:root {
+  --accent:#ff6b35;
+  --muted:#6b7280;
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --stroke:#e6e9ef;
+}
+body {
+  font-family: Inter, Arial;
+  background: var(--bg);
+  padding: 24px;
+  color: #111827;
+}
+.wrap { max-width: 720px; margin: auto; }
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--stroke);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px dashed var(--stroke);
+}
+.brand { display: flex; gap: 12px; }
+.logo {
+  width: 58px; height: 58px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg,#ffd7c7,#ff9f7a);
+  font-size: 26px;
+}
+.meta { text-align: right; font-size: 13px; color: var(--muted); }
+.content { padding: 18px 24px; }
+.grid { display: flex; gap: 12px; flex-wrap: wrap; }
+.col { flex: 1 1 200px; }
+table.items { width: 100%; border-collapse: collapse; margin-top: 8px; }
+table.items th, table.items td {
+  padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 14px;
+}
+.right { text-align: right; }
+.price { text-align: right; width: 120px; }
+.summary {
+  padding: 12px 24px 28px;
+  display: flex; justify-content: flex-end;
+}
+.summary .box {
+  min-width: 240px; border: 1px solid var(--stroke);
+  border-radius: 10px; padding: 12px 16px;
+}
+.summary-row {
+  display: flex; justify-content: space-between;
+  padding: 6px 0; color: var(--muted);
+}
+.summary-row.total {
+  font-size: 16px; font-weight: bold; color: #111827;
+}
+.actions {
+  padding: 18px 24px;
+  display: flex; justify-content: flex-end; gap: 10px;
+  border-top: 1px dashed var(--stroke);
+}
+.btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-ghost { border: 1px solid var(--stroke); color: var(--muted); }
+</style>
+
+</head>
+<body>
+
+<div class="wrap">
+<div class="card">
+
+  <!-- Header -->
+  <div class="card-header">
+    <div class="brand">
+      <div class="logo">🍽</div>
+      <div>
+        <h2 style="margin:0;">Delicious Restaurant</h2>
+        <p style="margin:0; font-size:12px; color:var(--muted);">Receipt / Bill</p>
+      </div>
+    </div>
+
+    <div class="meta">
+      <strong>Order #{{ order.id }}</strong><br>
+      {{ order.created_at|date:"d M Y - h:i A" }}<br><br>
+
+      {% if order.status == 'pending' %}
+        <span style="background:#fff3cd; color:#856404; padding:6px 8px; border-radius:8px;">Pending</span>
+      {% elif order.status == 'completed' %}
+        <span style="background:#d4edda; color:#155724; padding:6px 8px; border-radius:8px;">Completed</span>
+      {% else %}
+        <span style="background:#f8d7da; color:#721c24; padding:6px 8px; border-radius:8px;">Cancelled</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <div class="grid">
+      <div class="col"><strong>Customer</strong><br>{{ order.customer_name }}</div>
+      <div class="col"><strong>Table</strong><br>{{ order.table_number }}</div>
+      <div class="col"><strong>Served by</strong><br>{{ order.owner.username }}</div>
+    </div>
+
+    <!-- Items -->
+    <table class="items">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th class="right">Qty</th>
+          <th class="price">Price</th>
+          <th class="price">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in order.items.all %}
+        <tr>
+          <td>{{ it.menu_item.item_name }}</td>
+          <td class="right">{{ it.quantity }}</td>
+          <td class="price">₹{{ it.price }}</td>
+          <td class="price">₹{{ it.quantity|multiply:it.price }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- Summary -->
+  <div class="summary">
+    <div class="box">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>₹{{ order.total_amount }}</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span>₹{{ order.total_amount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <a href="{% url 'my_orders' %}" class="btn btn-ghost">Back</a>
+    <a href="javascript:window.print()" class="btn btn-primary">Print</a>
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>
