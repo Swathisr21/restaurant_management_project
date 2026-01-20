@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 style="text-align:center; margin-bottom:20px;">Reserve Table {{ table.table_number }}</h2>
+
+<div style="max-width:400px; margin:0 auto; border:1px solid #ddd; border-radius:10px; padding:30px;">
+
+    <div style="text-align:center; margin-bottom:20px;">
+        <h3>Table {{ table.table_number }}</h3>
+        <p><strong>Capacity:</strong> {{ table.capacity }} people</p>
+        <p><strong>Status:</strong> <span style="color:#28a745; font-weight:bold;">Available</span></p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label for="customer_name">Your Name:</label><br>
+        <input type="text" name="customer_name" id="customer_name"
+               value="{{ user.get_full_name|default:user.username }}"
+               autocomplete="off" placeholder="Enter your name" required
+               style="width:100%; padding:8px; margin:5px 0 15px 0; border:1px solid #ddd; border-radius:4px;"><br>
+
+        <label for="party_size">Party Size:</label><br>
+        <input type="number" name="party_size" id="party_size" min="1" max="{{ table.capacity }}"
+               value="1" required
+               style="width:100%; padding:8px; margin:5px 0 15px 0; border:1px solid #ddd; border-radius:4px;"><br>
+
+        <label for="reservation_time">Reservation Time (Optional):</label><br>
+        <input type="datetime-local" name="reservation_time" id="reservation_time"
+               style="width:100%; padding:8px; margin:5px 0 20px 0; border:1px solid #ddd; border-radius:4px;"><br>
+
+        <button type="submit" style="
+            width:100%;
+            padding:12px;
+            background:#28a745;
+            color:white;
+            border:none;
+            border-radius:6px;
+            font-size:16px;
+            cursor:pointer;
+        ">
+            Confirm Reservation
+        </button>
+    </form>
+
+</div>
+
+<div style="text-align:center; margin-top:20px;">
+    <a href="{% url 'table_availability' %}" style="color:#007BFF; text-decoration:none;">← Back to Tables</a>
+</div>
+
+{% endblock %}

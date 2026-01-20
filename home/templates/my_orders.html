@@ -26,6 +26,8 @@
     margin-left: 10px;
   }
   .pending { background:#ffeeba; color:#856404; }
+  .processing { background:#d1ecf1; color:#0c5460; }
+  .completed { background:#d4edda; color:#155724; }
   .cancelled { background:#f8d7da; color:#721c24; }
   .item-row { margin: 6px 0; font-size: 16px; }
   .invoice-link {
@@ -50,47 +52,50 @@
 <div class="order-title">
     Order #{{ order.id }}
 
-    {% if order.status == 'pending' %}
+    {% if order.status.name == 'pending' %}
         <span class="status-badge pending">Pending</span>
 
-    {% elif order.status == 'completed' %}
+    {% elif order.status.name == 'completed' %}
         <span class="status-badge completed">Completed</span>
 
-    {% elif order.status == 'cancelled' %}
+    {% elif order.status.name == 'cancelled' %}
         <span class="status-badge cancelled">Cancelled</span>
+
+    {% elif order.status.name == 'processing' %}
+        <span class="status-badge processing">Processing</span>
     {% endif %}
 </div>
 
 
             <p><b>Name:</b> {{ order.customer_name }}</p>
-            <p><b>Table Number:</b> {{ order.table_number }}</p>
+            <p><b>Order ID:</b> {{ order.order_id }}</p>
             <p><b>Date:</b> {{ order.created_at|date:"d M Y - h:i A" }}</p>
 
             <h4>Items Ordered:</h4>
             <ul class="items-list">
-            {% for item in order.items.all %}
+            {% for item in order.orderitem_set.all %}
                 <li class="item-row">
-                    {% if "pizza" in item.menu_item.item_name|lower %}
+                    {% if "pizza" in item.menu_item.name|lower %}
                         🍕
-                    {% elif "coffee" in item.menu_item.item_name|lower %}
+                    {% elif "coffee" in item.menu_item.name|lower %}
                         ☕
-                    {% elif "burger" in item.menu_item.item_name|lower %}
+                    {% elif "burger" in item.menu_item.name|lower %}
                         🍔
                     {% else %}
                         🍽
                     {% endif %}
 
-                    {{ item.menu_item.item_name }} — 
-                    Qty: {{ item.quantity }} — 
+                    {{ item.menu_item.name }} —
+                    Qty: {{ item.quantity }} —
                     Price: ₹{{ item.price }}
                 </li>
             {% endfor %}
             </ul>
 
-            <p><b>Total Amount:</b> ₹{{ order.total_amount }}</p>
+            <p><b>Total Amount:</b> ₹{{ order.calculate_total }}</p>
 
             <!-- Cancel Button -->
-            {% if order.status == 'cancelled' %}
+            {% if order.status.name == 'cancelled' %}
                 <p style="color:red;font-weight:bold;text-align:center;">
                     This order has been cancelled.
                 </p>

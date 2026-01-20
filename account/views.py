@@ -1,35 +1,51 @@
+# Create your views here.
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from rest_framework.viewsets import ViewSet
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 
-def register_view(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("home")
-    else:
-        form = UserCreationForm()
-    return render(request, "register.html", {"form": form})
-
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login, logout
-from django.contrib import messages
-
-def login_view(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect("home")
-        else:
-            messages.error(request, "Invalid username or password")
-    else:
-        form = AuthenticationForm()
-    return render(request, "login.html", {"form": form})
+from .serializers import UserProfileUpdateSerializer
+from django.contrib.auth import logout
 
 def logout_view(request):
+    """Simple logout view that works with GET requests"""
     logout(request)
-    return redirect("home")
+    return redirect('/')
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/accounts/login/')
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
+
+
+class UserProfileViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request):
+        user = request.user
+
+        serializer = UserProfileUpdateSerializer(
+            user,
+            data=request.data,
+            partial=False
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "success": True,
+                    "message": "Profile updated successfully",
+                    "data": serializer.data
+                },
+                status=status.HTTP_200_OK
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,28 +1,35 @@
-@login_required
-def edit_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    items = MenuItem.objects.all()
+{% extends 'base.html' %}
 
-    if request.method == "POST":
-        order.customer_name = request.POST.get("customer_name")
-        order.table_number = request.POST.get("table_number")
+{% block content %}
+<h2 style="text-align:center; margin-bottom:20px;">Edit Your Order</h2>
 
-        order.items.all().delete()
+<form method="POST" style="max-width:600px; margin:auto;">
+    {% csrf_token %}
 
-        total = 0
-        for item in items:
-            qty = int(request.POST.get(f"qty_{item.id}", 0))
-            if qty > 0:
-                OrderItem.objects.create(
-                    order=order,
-                    menu_item=item,
-                    quantity=qty,
-                    price=item.item_price
-                )
-                total += item.item_price * qty
+    <label>Your Name:</label><br>
+    <input type="text" name="customer_name" value="{{ order.customer_name }}" autocomplete="off" placeholder="Enter name" required><br><br>
 
-        order.total_amount = total
-        order.save()
-        return redirect("my_orders")
+    <h3>Select Items</h3>
 
-    return render(request, "edit_order.html", {"order": order, "items": items})
+    {% for item in items %}
+        <div style="border:1px solid #ddd; padding:10px; border-radius:8px; margin-bottom:12px;">
+            {% if "pizza" in item.name|lower %} 🍕
+            {% elif "burger" in item.name|lower %} 🍔
+            {% elif "coffee" in item.name|lower %} ☕
+            {% else %} 🍽 {% endif %}
+
+            <input type="checkbox" name="item_ids" value="{{ item.id }}" {% if item.id|stringformat:"s" in existing %}checked{% endif %}>
+            <strong>{{ item.name }}</strong> — ₹{{ item.price }}
+
+            <input type="number" name="qty_{{ item.id }}" min="0" value="{{ existing|get:item.id|stringformat:"s"|default:0 }}" style="width:60px; float:right;">
+            <div style="clear:both;"></div>
+        </div>
+    {% endfor %}
+
+    <button type="submit" style="padding:10px 20px; margin-top:15px; display:block; width:100%;">Update Order</button>
+</form>
+
+<div style="text-align:center; margin-top:20px;">
+    <a href="{% url 'my_orders' %}" style="color:#007BFF; text-decoration:none;">← Back to My Orders</a>
+</div>
+{% endblock %}

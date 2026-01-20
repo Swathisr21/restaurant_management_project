@@ -1,7 +1,85 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Restaurant Management System{% endblock %}
 
 {% block content %}
-<h1>Home Page Working Successfully!</h1>
-<p>Welcome to the Restaurant Management System.</p>
+
+<div style="text-align: center; max-width: 800px; margin: 0 auto;">
+    <h1 style="color: #333; margin-bottom: 20px;">🍽️ Restaurant Management System</h1>
+    <p style="font-size: 18px; color: #666; margin-bottom: 30px;">
+        Welcome to our restaurant! Manage your dining experience with ease.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 40px;">
+
+        <!-- Menu Section -->
+        <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; background: #f9f9f9;">
+            <h3 style="color: #28a745; margin-top: 0;">📋 Our Menu</h3>
+            <p>Browse our delicious selection of food and beverages.</p>
+            <a href="/menu/" style="display: inline-block; padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px;">View Menu</a>
+        </div>
+
+        <!-- Table Reservation -->
+        <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; background: #f9f9f9;">
+            <h3 style="color: #007bff; margin-top: 0;">🪑 Table Reservation</h3>
+            <p>Check table availability and make reservations.</p>
+            <a href="/tables/" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">Reserve Table</a>
+        </div>
+
+        <!-- Place Order -->
+        <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; background: #f9f9f9;">
+            <h3 style="color: #ffc107; margin-top: 0;">🛒 Place Order</h3>
+            <p>Order food for pickup or delivery with multiple payment options.</p>
+            {% if user.is_authenticated %}
+                <a href="/order/" style="display: inline-block; padding: 10px 20px; background: #ffc107; color: black; text-decoration: none; border-radius: 5px;">Order Now</a>
+            {% else %}
+                <a href="/accounts/login/" style="display: inline-block; padding: 10px 20px; background: #ffc107; color: black; text-decoration: none; border-radius: 5px;">Login to Order</a>
+            {% endif %}
+        </div>
+
+        <!-- My Orders -->
+        {% if user.is_authenticated %}
+        <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; background: #f9f9f9;">
+            <h3 style="color: #dc3545; margin-top: 0;">📦 My Orders</h3>
+            <p>View and manage your order history.</p>
+            <a href="/my-orders/" style="display: inline-block; padding: 10px 20px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px;">View Orders</a>
+        </div>
+        {% endif %}
+
+        <!-- Staff Section -->
+        {% if user.is_staff or user.staff_set.exists %}
+        <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; background: #f9f9f9;">
+            <h3 style="color: #17a2b8; margin-top: 0;">👨‍🍳 Staff Panel</h3>
+            <p>Access kitchen orders and inventory management.</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/kitchen/" style="display: inline-block; padding: 8px 15px; background: #17a2b8; color: white; text-decoration: none; border-radius: 5px;">Kitchen Orders</a>
+                <a href="/inventory/" style="display: inline-block; padding: 8px 15px; background: #17a2b8; color: white; text-decoration: none; border-radius: 5px;">Inventory</a>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Features Summary -->
+    <div style="margin-top: 50px; padding: 20px; background: #e9ecef; border-radius: 10px;">
+        <h3 style="margin-top: 0;">✨ System Features</h3>
+        <ul style="text-align: left; display: inline-block; list-style: none; padding: 0;">
+            <li>✅ User registration and authentication</li>
+            <li>✅ Interactive menu with categories</li>
+            <li>✅ Table availability and reservation system</li>
+            <li>✅ Order placement with payment method selection</li>
+            <li>✅ Order status tracking (Pending → Processing → Completed)</li>
+            <li>✅ Order management (edit, cancel, complete)</li>
+            <li>✅ Customer reviews and ratings</li>
+            <li>✅ Invoice generation</li>
+            <li>✅ Kitchen order display for staff</li>
+            <li>✅ Inventory management system</li>
+            <li>✅ Staff management and scheduling</li>
+            <li>✅ Staff/admin table management</li>
+            <li>✅ REST API endpoints</li>
+            <li>✅ Admin dashboard</li>
+        </ul>
+    </div>
+
+</div>
+
 {% endblock %}

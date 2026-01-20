@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="text-align: center; padding: 50px;">
+    <h2>You have been logged out successfully!</h2>
+    <p>Thank you for using our restaurant management system.</p>
+    <br>
+    <a href="{% url 'login' %}" class="btn btn-primary" style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">Login Again</a>
+    <br><br>
+    <a href="/" style="color: #007bff;">Return to Home</a>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+  .order-card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    background: #fff;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .order-title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-badge {
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: 10px;
+  }
+  .pending { background:#ffeeba; color:#856404; }
+  .completed { background:#d4edda; color:#155724; }
+  .cancelled { background:#f8d7da; color:#721c24; }
+  .processing { background:#cce7ff; color:#004085; }
+  .item-row { margin: 6px 0; font-size: 16px; }
+  .action-buttons {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .btn {
+    padding: 8px 15px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px;
+    font-weight: bold;
+  }
+  .btn-primary { background: #007bff; color: white; }
+  .btn-success { background: #28a745; color: white; }
+  .btn-warning { background: #ffc107; color: black; }
+  .btn-danger { background: #dc3545; color: white; }
+  .btn:hover { opacity: 0.8; }
+</style>
+
+<div class="order-card">
+    <!-- Order Title + Status -->
+    <div class="order-title">
+        Order #{{ order.id }}
+
+        {% if order.status.name == 'pending' %}
+            <span class="status-badge pending">Pending</span>
+        {% elif order.status.name == 'completed' %}
+            <span class="status-badge completed">Completed</span>
+        {% elif order.status.name == 'cancelled' %}
+            <span class="status-badge cancelled">Cancelled</span>
+        {% elif order.status.name == 'processing' %}
+            <span class="status-badge processing">Processing</span>
+        {% endif %}
+    </div>
+
+    <p><b>Order ID:</b> {{ order.order_id }}</p>
+    <p><b>Customer Name:</b> {{ order.customer_name }}</p>
+    <p><b>Date:</b> {{ order.created_at|date:"d M Y - h:i A" }}</p>
+
+    <h4>Items Ordered:</h4>
+    <ul class="items-list">
+    {% for item in order.items.all %}
+        <li class="item-row">
+            {% if "pizza" in item.menu_item.name|lower %}
+                🍕
+            {% elif "coffee" in item.menu_item.name|lower %}
+                ☕
+            {% elif "burger" in item.menu_item.name|lower %}
+                🍔
+            {% else %}
+                🍽
+            {% endif %}
+
+            {{ item.menu_item.name }} —
+            Qty: {{ item.quantity }} —
+            Price: ₹{{ item.price }}
+        </li>
+    {% endfor %}
+    </ul>
+
+    <p><b>Total Amount:</b> ₹{{ order.calculate_total }}</p>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        {% if order.status.name == 'pending' %}
+            <a href="{% url 'edit_order' order.id %}" class="btn btn-warning">Edit Order</a>
+            <a href="{% url 'cancel_order' order.id %}"
+               class="btn btn-danger"
+               onclick="return confirm('Are you sure you want to cancel this order?');">
+               Cancel Order
+            </a>
+        {% elif order.status.name == 'pending' %}
+            <a href="{% url 'complete_order' order.id %}" class="btn btn-success">Mark as Completed</a>
+        {% endif %}
+
+        <a href="{% url 'invoice_page' order.id %}" class="btn btn-primary">View Invoice</a>
+        <a href="{% url 'my_orders' %}" class="btn btn-secondary" style="background:#6c757d;">Back to Orders</a>
+    </div>
+</div>
+
+{% endblock %}

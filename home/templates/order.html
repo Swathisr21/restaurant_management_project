@@ -9,25 +9,30 @@
     <label>Your Name:</label><br>
     <input type="text" name="customer_name" autocomplete="off" placeholder="Enter name" required><br><br>
 
-    <label><strong>Table Number:</strong></label>
-    <input type="number" name="table_number" required class="form-control"><br>
-
     <h3>Select Items</h3>
 
     {% for item in items %}
         <div style="border:1px solid #ddd; padding:10px; border-radius:8px; margin-bottom:12px;">
-            {% if "pizza" in item.item_name|lower %} 🍕 
-            {% elif "burger" in item.item_name|lower %} 🍔 
-            {% elif "coffee" in item.item_name|lower %} ☕ 
+            {% if "pizza" in item.name|lower %} 🍕
+            {% elif "burger" in item.name|lower %} 🍔
+            {% elif "coffee" in item.name|lower %} ☕
             {% else %} 🍽 {% endif %}
 
             <input type="checkbox" name="item_ids" value="{{ item.id }}">
-            <strong>{{ item.item_name }}</strong> — ₹{{ item.item_price }}
+            <strong>{{ item.name }}</strong> — ₹{{ item.price }}
 
             <input type="number" name="qty_{{ item.id }}" min="0" value="0" style="width:60px; float:right;">
             <div style="clear:both;"></div>
         </div>
     {% endfor %}
+
+    <h3>Payment Method</h3>
+    <select name="payment_method" required style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;">
+        <option value="">Select Payment Method</option>
+        {% for method in payment_methods %}
+        <option value="{{ method.id }}">{{ method.name }}</option>
+        {% endfor %}
+    </select>
 
     <button type="submit" style="padding:10px 20px; margin-top:15px; display:block; width:100%;">Submit Order</button>
 </form>
