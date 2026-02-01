@@ -4,14 +4,35 @@ from .models import MenuCategory, MenuItem, Table
 class MenuCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuCategory
-        fields = '__all__'
+        fields = ['id','name']
 
 class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
-        fields = '__all__'
+    fields = '__all__' 
 
-class TableSerializer(serializers.ModelSerializer):
+class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
+        model = Ingredient
+        fields = ['id', 'name']
+    
+    # Custom validation
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.validationError("Price must be a positive number")
+        return value  
+
+class TableSerializer(serializers.ModelSerializers):
+     class Meta:
         model = Table
         fields = '__all__'
+
+class DailySpecialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItem
+        fields = [
+            "id",
+            "name",
+            "price",
+            "is_daily_special"
+        ]
