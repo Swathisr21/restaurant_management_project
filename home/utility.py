@@ -1,5 +1,5 @@
 from datetime import datetime, time
-from .models import DailyOperatingHours
+from .models import DailyOperatingHours, MenuItem, Cuisine
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 import logging 
@@ -107,4 +107,21 @@ def is_valid_email(email: str) -> bool:
         validator(email)
         return True
     except ValidationError:
-        return False        
+        return False
+
+def get_distinct_cuisines():
+    """
+    Returns a list of unquie cuisine name available
+    across all menu items.
+
+    Example output:
+    ['Indian', 'Chinese', 'Italian']
+    """
+    Cuisines = (
+        MenuItem.objects
+        .values_list('cuisine__name', flat=True)
+        .distinct()
+    )
+
+    # Convert Queryset to normal python list
+    return list(cuisines)        
