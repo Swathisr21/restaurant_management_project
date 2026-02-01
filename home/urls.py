@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     MenuCategoryListview, 
     FeaturedMenuItemsView, 
@@ -6,8 +6,17 @@ from .views import (
     MenuItemIngredientsView,
     MenuItemViewSet,
     TableDetailView,
-    AvailableTablesAPIView
+    AvailableTablesAPIView,
+    MenuItemViewSet
     )
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(
+    r"categories",
+    MenuCategoryViewSet,
+    basename="menu-category"
+)
 
 # for viewSet List endpoint
 menu_item_search = MenuItemSearchViewset.as_view({'get': 'list'})
@@ -23,7 +32,7 @@ urlpatterns = [
     path("menu-items/<int:pk>/update", menu_item_update, name="menu_item_update"),
     path("tables/<int:pk>/", TableDetailView.as_view(), name="table_detail"),
     path('api/tables/available/', AvailableTablesAPIView.as_view(), name='available_tables_api'),
-    path('daily-specials/',DailySpecialsView.as_view(), name="daily-specials"
-    ),
+    path('daily-specials/',DailySpecialsView.as_view(), name="daily-specials"),
+    path("", include(router.urls)),
 ]
 
