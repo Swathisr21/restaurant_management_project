@@ -64,6 +64,24 @@ class Coupon(models.Model):
     def __str__(self):
         return f"{self.code} ({self.discount_percentage}% off)"
 
+class OrderManager(models.Manager):
+    """
+    Custom manager for Order model to provide
+    reusable and readable query methods.
+    """
+
+    def by_status(self, status_name):
+        """
+        Get all orders with a specific status.
+        Example: Order.objects.by_status('pending)
+        """
+        return self.filter(status__name__iexact=status_name)
+
+    def pending(self):
+        return self.by_status('pending')
+
+    def processing(self):
+        return self.by_status('processing')        
 # order 
 from decimal import Decimal
 class Order(models.Model):
@@ -82,7 +100,7 @@ class Order(models.Model):
     status = models.ForeignKey(OrderStatus, on_delete=models.SET_NULL, null=True)
 
 # assign custom manager
-    objects = ActiveOrderManager()
+    objects = OrderManager()
     
     def save(self, *args, **kwargs):
         if not self.order_id:
@@ -93,8 +111,7 @@ class Order(models.Model):
         items = self.orderitem_set.select_related("menu_item")
         return list({item.menu_item.name for item in items})        
 
-    def __str__(self):
-        return f"Order {self.order_id}"
+    
 # Calculate
     def calculate_total(self):
         total = Decimal("0.00")
@@ -102,7 +119,10 @@ class Order(models.Model):
         for item in  self.orderitem_set.all():
             total+=item.price * item.quantity
 
-        return total           
+        return total
+
+    def __str__(self):
+        return f"Order {self.order_id}"               
 
 # Restaurant 
 class Restaurant(models.Model):
