@@ -92,5 +92,6 @@ class OrderSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     f"Order cannot be cancelled. current status: {order.status.name}"
                 )
-
-            return value                            
+            
+            data["order"] = order
+            return data                            
