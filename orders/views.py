@@ -15,7 +15,7 @@ class OrderHistoryView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-    def get_queryset(self):
+    def get_queryset(self, request):
         orders = Order.objects.filter(user=request.user).order_by('-Created_at')
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
