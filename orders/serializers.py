@@ -43,7 +43,9 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['item_name', 'quantity','price']                
+        fields = ['item_name', 'quantity','price'] 
+
+                           
 
 class OrderSerializer(serializers.ModelSerializer):
     status = OrderStatusSerializer(read_only=True)
