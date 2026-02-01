@@ -66,4 +66,31 @@ class OrderSerializer(serializers.ModelSerializer):
             'created_at',
             'status',
             'items',
-        ]        
+        ]
+
+    class OrderCancelSerializer(serializers.Serializer):
+        """
+        Serializer to cancel an order
+        """
+        order_id = serializers.CharField()
+
+        def validated_order_id(self, value):
+            try:
+                order = Order.objects.get(order_id=value)
+            except Order.DoesNotExist:
+                raise serializers.ValidationError("Order not found.")
+            request = self.context.get("request")
+
+            # Ensure user owns the order
+            if order.user != request.user:
+                raise serializers.ValidationError(
+                    "You are not allowed to cancel this order."
+                )
+
+            # Prevent cancelling completed or already cancelled orders
+            if order.status.name.lower() in ["completed", "cancelled"]:
+                raise serializers.ValidationError(
+                    f"Order cannot be cancelled. current status: {order.status.name}"
+                )
+
+            return value                            
