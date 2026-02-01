@@ -19,3 +19,14 @@ class OrderHistoryView(ListAPIView):
         orders = Order.objects.filter(user=request.user).order_by('-Created_at')
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
+
+class PaymentMethodListView(ListAPIView):
+    """
+    Returns all active payment methods.
+    """
+    serializer_class = PaymentMethodSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return PaymentMethod.objects.filter(is_active=True) 
+               
