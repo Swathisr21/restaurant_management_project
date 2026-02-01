@@ -9,6 +9,40 @@ from .models import Order
 from .serializers import OrderSerializer
 from .serializers import OrderStatusUpdateSerializer, OrderCancelSerializer
 
+class UpdateOrderStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = OrderStatusUpdateSerializer(data=request.data)
+
+        if serializer.is_valid():
+            order_id = serializer.validated_data['order_id']
+            new_status = serializer.validated_data['status']
+
+            try:
+                order = Order.objects.get(id=order_id)
+                
+                # Optional : restrict update to order owner
+                if order.user != request.user:
+                    return Response(
+                        {"error": "You are not allowed to update this order."},
+                        status=status.HTTP_403_FORBIDDEN 
+                    )
+
+                order.status = new_status
+                order.save()
+
+                return Response(
+                    {
+                        "message": "Order status updated successfully.",
+                        "order_id": order.id,
+                        "new_status": order.status
+                    },
+                    status=status.HTTP_200_OK
+                )
+
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                     
 class OrderHistoryView(ListAPIView):
     """
     Returns the order history of the logged-in user.
