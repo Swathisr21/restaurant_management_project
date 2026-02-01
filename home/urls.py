@@ -23,7 +23,7 @@ urlpatterns = [
     path("menu-items/<int:pk>/update", menu_item_update, name="menu_item_update"),
     path("tables/<int:pk>/", TableDetailView.as_view(), name="table_detail"),
     path('api/tables/available/', AvailableTablesAPIView.as_view(), name='available_tables_api'),
-    path('daily-specails/',DailySpecialsView.as_view(), name="daily-specials"
+    path('daily-specials/',DailySpecialsView.as_view(), name="daily-specials"
     ),
 ]
 
