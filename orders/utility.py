@@ -1,6 +1,8 @@
 import string
 import secrets
-from django.db.models import Sum
+from .models import Coupon
+from django.db.models import sum
+from .models import Order
 from decimal import Decimal
 import logging
 from django.core.mail import send_mail
@@ -8,8 +10,45 @@ from django.conf import settings
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from smtplib import SMTPException
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
+
+def update_order_status(order_id, new_status):
+    """
+    Update the status of an order.
+
+    Args:
+        order_id (int): ID of the order to update
+        new_status (str): New status to set (e.g., 'PENDING', 'PROCESSING', 'DELIVERED')
+
+    Returns:
+        tuple (bool, str):
+            - True, success message if updated
+            - False, error message if failed
+    """
+    try:
+        order = Order.objects.get(id=order_id)
+
+        old_status = order.status
+        order.status = new_status
+        order.save()
+
+        logger.info(
+            f"Order {order_id} status changed from {old_status} to {new_status}"
+        )
+
+        return True, "Order status updated successfully."
+
+    except ObjectDoesNotExist:
+        logger.error(f"Order with ID {order_id} not found.")
+        return False, "Order not found."
+
+    except Exception as exc:
+        logger.exception(
+            f"Unexpected error while updating order {order_id}: {exc}"
+        )
+        return False, "Failed to update order status."                    
 
 # Email sender
 def send_email(recipient_email, subject, message):
@@ -24,24 +63,25 @@ def send_email(recipient_email, subject, message):
             fail_silently=False,
         )
         return True
-    except ValidationError:
-        logger.error(f"Invalid email: {recipient_email}")
-        return False
-    except Exception as e:
-        logger.error(f"Email error :{str(e)}")
-        return False
+
+except ValidationError:
+    logger.error(f"Invalid email: {recipient_email}")
+    return False
+
+except Exception as e:
+    logger.error(f"Email error :{str(e)}")
+    return False
 
 def generate_unique_order_id(length=8):
     """
     Generate a unique, short alphanumeric order ID.
     Example: X9K2A7PZ
     """
-    from .models import Order
     characters = string.ascii_uppercase + string.digits
 
     while True:
         order_id = ''.join(secrets.choice(characters) for _ in range(length))
-        if not Order.objects.filter(order_id=order_id).exists():
+        if not Order.objects.filter(order_id=order_id).exsits():
             return order_id
             
 def send_order_confirmation_email(order_id, customer_email, customer_name, total_price):
@@ -63,48 +103,48 @@ def send_order_confirmation_email(order_id, customer_email, customer_name, total
 
     Thank you for choosing our restaurant!
 
-    Best regards,
+    Best resards,
     Restaurant Team
     """
        
-    try:
-        send_mail(
+       try:
+           send_mail(
             subject=subject,
             message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[customer_email],
             fail_silently=False,
-        )
+           )
 
-        return {
-            "success": True,
-            "message": "Order confirmation email sent successfully."
-        }
+           return {
+               "success": True,
+               "message": "Order confirmation email sent succeesfully."
+           }
 
-    except SMTPException as e:
-        logger.error(f"SMTP error while sending order email: {str(e)}")
 
-        return {
-            "success": False,
-            "message": "Failed to send email due to email server error."
-        }
+        except SMTPException as e:
+            logger.error(f"SMTP error while sending order email: {str(e)}")
 
-    except Exception as e:
-        logger.error(f"Unexpected error while sending order email: {str(e)}")
+            return {
+                "success": False,
+                "message": "Failed to send email due to email server error."
+            }
 
-        return {
-            "success": False,
-            "message": "An unexpected error occurred while sending the email."       
-        }
+        except Exception as e:
+            logger.error(f"Unexpected error while sending order email: {str(e)}")
+
+            return {
+                "success": False,
+                "message": "An unexpected error occurred while sending the email."       
+            }
                             
 
 def generate_coupon_code(length=10):
-    """ Generates a unique random alphanumeric coupon code."""
-    from .models import Coupon
+    """ Generates a unique rando alphanumeric coupon code."""
     characters = string.ascii_uppercase + string.digits
     while True:
         code = ''.join(secrets.choice(characters) for _ in range(length))
-        #  check if this code already exists in database
+        #  check if this code already excits in database
         if not Coupon.objects.filter(code=code).exists():
             return code
 
@@ -114,19 +154,18 @@ def get_daily_sales_total(date):
     :param date: A python date object.
     :return : Decimal total of sales for that day , or 0 if none.
     """
-    from .models import Order
      # orders QuerySet
-    orders = Order.objects.filter(created_at__date=date)
+    orders = Order.objects.filter(created_at_date=date)
     result = orders.aggregate(total_sum=Sum('total_price'))
     total = result.get('total_sum')
 
     if total is None:
-        return Decimal("0.00")
+        return 0
     return total
 
 def calculate_tip_amount(order_total, tip_percentage):
     """
-    calculate the tip amount for a given order total and tip percentage.
+    calculate the tip amount for a given ordder total and tip percentage.
     
     """
     
@@ -138,77 +177,3 @@ def calculate_tip_amount(order_total, tip_percentage):
 
     # round to 2 decimal places
     return round(tip_amount, 2)
-
-
-def validate_phone_number(phone_number):
-    """
-    Validate phone number format.
-    Basic validation - should be 10 digits.
-    """
-    import re
-    pattern = r'^\d{10}$'
-    return bool(re.match(pattern, phone_number))
-
-
-def get_restaurant_open_status():
-    """
-    Check if restaurant is currently open based on opening days.
-    For now, simple implementation - restaurant is open Mon-Sun.
-    """
-    from datetime import datetime
-    current_day = datetime.now().strftime('%a')
-    # This is a basic implementation - in real world, you'd have opening hours
-    open_days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    return current_day in open_days
-
-
-def get_todays_restaurant_hours():
-    """
-    Return today's restaurant hours.
-    Basic implementation.
-    """
-    return "9:00 AM - 10:00 PM"
-
-
-def get_random_daily_special():
-    """
-    Get a random daily special from featured menu items.
-    """
-    from home.models import MenuItem
-    featured_items = MenuItem.objects.filter(is_featured=True)
-    if featured_items.exists():
-        import random
-        return random.choice(list(featured_items))
-    return None
-
-
-def validate_email_address(email):
-    """
-    Validate email address format.
-    """
-    try:
-        validate_email(email)
-        return True
-    except ValidationError:
-        return False
-
-
-def top_selling_menu_items(limit=5):
-    """
-    Custom manager method to get top-selling menu items.
-    """
-    from django.db.models import Count
-    from .models import OrderItem
-
-    return OrderItem.objects.values('menu_item__name') \
-        .annotate(order_count=Count('menu_item')) \
-        .order_by('-order_count')[:limit]
-
-
-def upcoming_daily_specials():
-    """
-    Custom manager to filter upcoming daily specials.
-    For now, just return featured items.
-    """
-    from home.models import MenuItem
-    return MenuItem.objects.filter(is_featured=True)
