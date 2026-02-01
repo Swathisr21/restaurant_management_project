@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import Order
 from .serializers import OrderSerializer
-from .serializers import OrderStatusUpdateSerializer
+from .serializers import OrderStatusUpdateSerializer, OrderCancelSerializer
 
 class OrderHistoryView(ListAPIView):
     """
@@ -31,5 +31,38 @@ class PaymentMethodListView(ListAPIView):
 
     def get_queryset(self):
         return PaymentMethod.objects.filter(is_active=True) 
+
+class CancelOrderView(APIView):
+    """
+    Allows a user to cancel their own order
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        serializer = OrderCancelSerializer(
+            data=request.data,
+            context={"request": request}
+        )        
     
-               
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST 
+            )
+
+        order_id = serializer.validated_data["order_id"]
+        order = Order.objects.get(order_id=order_id)
+
+        # Set status to Cancelled
+        cancelled_status = OrderStatus.objects.get(name__iexact="cancelled")
+        order.status = cancelled_status
+        order.save()
+
+        return Response(
+            {
+                "message": "Order cancelled successfully.",
+                "order_id": order.order_id,
+                "status": "Cancelled"
+            },
+            status=status.HTTP_200_OK
+        )
