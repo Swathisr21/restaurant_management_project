@@ -125,4 +125,15 @@ class DailySpecialsView(APIView):
             serializer.data,
             status=status.HTTP_200_OK
         )
-                    
+
+class MenuCategoryViewSet(ModelViewSet):
+    """
+    Handles CRUD operations for menu Categories:
+    - List
+    - Retrieve
+    - Create
+    - Update
+    - Delete
+    """
+    queryset = MenuCategory.objects.all()
+    serializer_class = MenuCategorySerializer                   
