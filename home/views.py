@@ -2,17 +2,40 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework import viewsets, status
 from rest_framework.response import Response 
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination 
-from .models import MenuCategory, MenuItem, Table
-from .serializers import MenuCategorySerializer, MenuItemSerializer, TableSerializer
+from .models import MenuCategory, MenuItem, Table, UserReview
+from .serializers import MenuCategorySerializer, MenuItemSerializer, TableSerializer, UserReviewSerializer
 from .utils.validation_utils import is_valid_email
+from rest_framework.permissions import IsAuthenticated 
 
 if not is_valid_email(user_email):
     return Response({"error": "Invalid email"}, status=400)
+
+class CreateUserReviewView(CreateAPIView):
+    """
+    Create a new review for a menu item.
+    """
+    serializer_class = UserReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class MenuItemReviewListView(ListAPIView):
+    """
+    Retrieve all reviews for a specific menu item.
+    """
+    serializer_class = UserReviewSerializer
+    
+    def get_queryset(self):
+        menu_item_id = self.kwargs.get("menu_item_id")
+        return UserReview.objects.filter(
+            menu_item_id=menu_item_id
+        ).order_by("-created_at")            
     
 
 class MenuCategoryListView(ListAPIView):
