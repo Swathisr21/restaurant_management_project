@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import Order
+from rest_framework.decorators import permission_classes
 from .serializers import OrderSerializer
 from .serializers import OrderStatusUpdateSerializer, OrderCancelSerializer
 
@@ -101,4 +102,26 @@ class CancelOrderView(APIView):
             status=status.HTTP_200_OK
         )
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_order_status(request, order_id):
+    """
+    Retrieve the current status of an order by order ID.
+    """
+
+    try:
+        order = Order.objects.get(order_id=order_id, user=request.user)
+    except Order.DoesNotExist:
+        return Response(
+            {"error": "Order not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    return Response(
+        {
+            "order_id": order.order_id,
+            "status": order.status.name if order.status else None
+        },
+        status=status.HTTP_200_OK
+    )        
         
