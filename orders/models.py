@@ -166,3 +166,36 @@ class PaymentMethod(models.Model):
 
     def __str__(self):
         return self.name
+
+class LoyaltyProgram(models.Model):
+    """
+    Stores information about restaurant loyalty programs.
+    """
+
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    points_per_dollar_spent = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        help_text="Points earned per dollar spent"
+    )
+
+    description = models.TextField()
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated _at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return self.name
