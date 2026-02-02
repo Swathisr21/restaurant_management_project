@@ -8,13 +8,14 @@ from .views import (
     TableDetailView,
     AvailableTablesAPIView,
     MenuItemViewSet,
-    MenuItemReviewViewSet
+    MenuItemReviewViewSet,
+    MenuCategoryViewSet
     )
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(
-    r"categories",
+    "categories",
     MenuCategoryViewSet,
     basename="menu-category"
 )
@@ -24,6 +25,9 @@ menu_item_search = MenuItemSearchViewset.as_view({'get': 'list'})
 menu_item_update = MenuItemViewSet.as_view({
     'put': 'update',
 })
+
+router = DefaultRouter()
+router.register('menu-categories', MenuCategoryViewSet, basename='menu-category')
 
 urlpatterns = [
     path('menu/categories/', MenuCategoryListview.as_view(),name='menu_categories'),
