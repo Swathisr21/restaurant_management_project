@@ -26,7 +26,7 @@ class UserReviewSerializer(serializers.ModelSerializer):
 class MenuCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuCategory
-        fields = ['id','name']
+        fields = ['id', 'name', 'description']
 
 class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
