@@ -1,6 +1,21 @@
 from django.db import models
 from django.db.models import Count
 import datetime
+from django.contrib.auth.models import User
+
+class UserReview(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    menu_item = models.ForeignKey(
+        "MenuItem",
+        on_delete=models.CASCADE,
+        related_name="reviews"
+    )
+    rating = models.PositiveIntegerField()
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.menu_item} ({self.rating})"
 
 # Menu Item Manager
 class MenuItemManager(models.Manager):
