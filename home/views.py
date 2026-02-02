@@ -10,7 +10,7 @@ from rest_framework.pagination import PageNumberPagination
 from .models import MenuCategory, MenuItem, Table, UserReview
 from .serializers import MenuCategorySerializer, MenuItemSerializer, TableSerializer, UserReviewSerializer
 from .utils.validation_utils import is_valid_email
-from rest_framework.permissions import IsAuthenticated 
+from rest_framework.permissions import IsAuthenticatedOrReadOnly 
 
 if not is_valid_email(user_email):
     return Response({"error": "Invalid email"}, status=400)
@@ -152,6 +152,7 @@ class DailySpecialsView(APIView):
 class MenuCategoryViewSet(ModelViewSet):
     """
     Handles CRUD operations for menu Categories:
+    Supports:
     - List
     - Retrieve
     - Create
@@ -159,4 +160,5 @@ class MenuCategoryViewSet(ModelViewSet):
     - Delete
     """
     queryset = MenuCategory.objects.all()
-    serializer_class = MenuCategorySerializer                   
+    serializer_class = MenuCategorySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]                   
