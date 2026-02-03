@@ -58,3 +58,6 @@ class DailySpecialSerializer(serializers.ModelSerializer):
             "price",
             "is_daily_special"
         ]
+
+class MenuItemAvailabilitySerializer(serializers.Serializer):
+    is_available = serializers.BooleanField()
