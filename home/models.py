@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Count
-import datetime
+from datetime import datetime, timedelta 
 from django.contrib.auth.models import User
 from .models import MenuItem
 
@@ -157,3 +157,57 @@ class LoyaltyProgram(models.Model):
 
     def __str__(self):
         return self.name
+
+class Reservation(models.Model):
+    """
+    Stores reservations for a restaurant.
+    """
+
+    customer_name = models.CharField(max_length=100)
+    reservation_date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    created_at = models.DateTimeField(auto_now_add=True) 
+
+    def __str__(self):
+        return f"{self.customer_name} - {self.reservation_date} ({self.start_time} to {self.end_time})"       
+    
+    @classmethod
+    def fine_available_slots(
+        cls,
+        reservation_date,
+        range_start,
+        range_end,
+        slot_duration_minutes=60
+    ):
+        """
+        Find available reservation slots within a given time range.
+        """
+
+        existing_reservations = cls.objects.filter(
+            reservation_date=reservation_date
+        )
+
+        available_slots = []
+
+        current_start = datetime.combine(reservation_date, range_start)
+        boundary_end = datetime.combine(reservation_date, range_end)
+        slot_delta = timedelta(minutes=slot_duration_minutes)
+
+        while current_start + slot_delta <= boundary_end:
+            current_end = current_start + slot_delta
+
+            # Check for overlapping reservations 
+            overlap = existing_reservations.filter(
+                start_time__lt=current_end.time(),
+                end_time__gt=current_start.time()
+            ).exists()
+
+            if not overlap:
+                available_slots.append(
+                    (current_start.time(), current_end.time())
+                )
+
+                current_start += slot_delta
+
+        return available_slots        
