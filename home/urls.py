@@ -10,7 +10,8 @@ from .views import (
     MenuItemViewSet,
     MenuItemReviewViewSet,
     MenuCategoryViewSet,
-    RestaurantInfoView
+    RestaurantInfoView,
+    UpdateMenuItemAvailabilityView
     )
 from rest_framework.routers import DefaultRouter
 
@@ -43,6 +44,6 @@ urlpatterns = [
     path("reviews/create/", CreateUserReviewView.as_view()),
     path("menu-items/<int:menu_item_id>/reviews/", MenuItemReviewViewSet.as_view(), name="menu-item-reviews"),
     path("restaurant/info/", RestaurantInfoView.as_view(), name="restaurant-info"),
-
+    path("menu-items/<int:menu_item_id>/availability/", UpdateMenuItemAvailabilityView.as_view(), name="menu-item-availability"),
 ]
 
