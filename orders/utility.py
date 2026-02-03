@@ -177,3 +177,33 @@ def calculate_tip_amount(order_total, tip_percentage):
 
     # round to 2 decimal places
     return round(tip_amount, 2)
+
+def calculate_order_total(order_items):
+    """
+    Calculate the total price of an order.
+
+    Each item in order_items is expected to have:
+    - price (Decimal or numeric)
+    - quantity (int)
+
+    Args:
+        order_items (iterable): List or queryset of order items
+
+    Returns:
+        Decimal: Total order cost
+    """
+
+    total = Decimal("0.00")
+
+    # Handel empty list or None safely
+    if not order_items:
+        return total
+
+    for item in order_items:
+        # Ensure price and quantity exist
+        price = Decimal(item.price)
+        quantity = int(item.quantity)
+
+        total += price * quantity
+
+    return total             
