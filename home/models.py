@@ -37,10 +37,11 @@ class MenuItem(models.Model):
 
     # New Field 
     is_daily_special = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
-
+    
 
 # Menu Category
 class MenuCategory(models.Model):
