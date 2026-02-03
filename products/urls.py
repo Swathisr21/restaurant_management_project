@@ -7,4 +7,5 @@ router.register('menu', MenuItemViewSet, basename='menu')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path("api/", include("home.urls")),
 ]
