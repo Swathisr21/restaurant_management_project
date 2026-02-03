@@ -126,13 +126,11 @@ class Restaurant(models.Model):
     name = models.CharField(max_length=200)
     address = models.TextField()
     phone = models.CharField(max_length=15, blank=True, null=True)
-    has_delivery = models.BooleanField(default=False)
-
-    # New Field: operating days
-    operating_days = models.CharField()
-       max_length=100,
-       help_text="comma-separated days (e.g., Mon,Tue,Wed,Thu,Fri)"
+    opening_hours = models.CharField(
+        max_length=100,
+        help_text="Example: Mon-Sun 9:00 AM - 10:00 PM"
     )
+    has_delivery = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
